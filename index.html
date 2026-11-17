@@ -39,7 +39,7 @@ button {
   cursor: pointer;
 }
 
-input {
+input, textarea {
   display: block;
   width: 100%;
   padding: 13px;
@@ -48,6 +48,12 @@ input {
   border: 1px solid #526078;
   background: #25364b;
   color: white;
+  font-family: Arial, sans-serif;
+}
+
+textarea {
+  min-height: 110px;
+  resize: vertical;
 }
 
 .hidden { display: none; }
@@ -87,6 +93,39 @@ input {
 
 .card span { font-size: 30px; }
 .card p { color: #bdc7d5; font-size: 13px; }
+
+.post {
+  background: #25364b;
+  padding: 15px;
+  border-radius: 12px;
+  margin-top: 15px;
+  overflow-wrap: anywhere;
+}
+
+.post-author {
+  color: #39e6c0;
+  font-weight: bold;
+}
+
+.post-text {
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.post-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.post-actions button {
+  padding: 9px 12px;
+}
+
+.delete-btn {
+  background: #743d4a;
+  color: white;
+}
 </style>
 </head>
 
@@ -114,22 +153,29 @@ input {
       <h3>Entertainment</h3>
       <p>Watch and enjoy</p>
     </div>
+
     <div class="card">
       <span>📚</span>
       <h3>Knowledge</h3>
       <p>Learn new things</p>
     </div>
-    <div class="card">
+
+    <div class="card" onclick="openCommunity()">
       <span>🌍</span>
       <h3>Community</h3>
       <p>Connect with people</p>
     </div>
+
     <div class="card">
       <span>🎮</span>
       <h3>Games & Help</h3>
       <p>Play and explore</p>
     </div>
   </div>
+
+  <button class="full" onclick="openCommunity()">
+    Open Community 🌍
+  </button>
 
   <button class="full" onclick="openProfile()">
     My Profile 👤
@@ -168,10 +214,29 @@ input {
   </button>
 </section>
 
+<section id="community" class="box hidden">
+  <h2>🌍 ZUNO Community</h2>
+  <p>Share your thoughts with the world!</p>
+
+  <textarea id="postInput"
+  placeholder="What's on your mind?"></textarea>
+
+  <button class="full" onclick="createPost()">
+    Publish Post 🚀
+  </button>
+
+  <h3>Community Posts</h3>
+  <div id="postsList"></div>
+
+  <button class="full secondary" onclick="backDashboard()">
+    Back to Dashboard
+  </button>
+</section>
+
 <script>
 
 function show(id) {
-  ["login","dashboard","profile"].forEach(function(x) {
+  ["login","dashboard","profile","community"].forEach(function(x) {
     document.getElementById(x).classList.add("hidden");
   });
 
@@ -249,6 +314,132 @@ function saveProfile() {
   show("dashboard");
 }
 
+function openCommunity() {
+  renderPosts();
+  show("community");
+}
+
+function getPosts() {
+  try {
+    return JSON.parse(localStorage.getItem("zunoPosts")) || [];
+  } catch(e) {
+    return [];
+  }
+}
+
+function savePosts(posts) {
+  try {
+    localStorage.setItem("zunoPosts", JSON.stringify(posts));
+    return true;
+  } catch(e) {
+    alert("Storage full. Please try again.");
+    return false;
+  }
+}
+
+function createPost() {
+  const input = document.getElementById("postInput");
+  const message = input.value.trim();
+
+  if (!message) {
+    alert("Please write something first!");
+    return;
+  }
+
+  const posts = getPosts();
+
+  const newPost = {
+    id: Date.now().toString(),
+    author: localStorage.getItem("zunoName") || "Guest",
+    text: message,
+    likes: 0
+  };
+
+  posts.unshift(newPost);
+
+  if (savePosts(posts)) {
+    input.value = "";
+    renderPosts();
+    alert("Your post is published!");
+  }
+}
+
+function renderPosts() {
+  const list = document.getElementById("postsList");
+  const posts = getPosts();
+
+  list.replaceChildren();
+
+  if (posts.length === 0) {
+    const empty = document.createElement("p");
+    empty.textContent = "No posts yet. Be the first to share!";
+    list.appendChild(empty);
+    return;
+  }
+
+  posts.forEach(function(post) {
+    const card = document.createElement("div");
+    card.className = "post";
+
+    const author = document.createElement("div");
+    author.className = "post-author";
+    author.textContent = "👤 " + post.author;
+
+    const content = document.createElement("p");
+    content.className = "post-text";
+    content.textContent = post.text;
+
+    const actions = document.createElement("div");
+    actions.className = "post-actions";
+
+    const likeButton = document.createElement("button");
+    likeButton.textContent = "❤️ Like (" + post.likes + ")";
+    likeButton.onclick = function() {
+      likePost(post.id);
+    };
+
+    actions.appendChild(likeButton);
+
+    const deleteButton = document.createElement("button");
+    deleteButton.className = "delete-btn";
+    deleteButton.textContent = "Delete";
+    deleteButton.onclick = function() {
+      deletePost(post.id);
+    };
+
+    actions.appendChild(deleteButton);
+
+    card.appendChild(author);
+    card.appendChild(content);
+    card.appendChild(actions);
+
+    list.appendChild(card);
+  });
+}
+
+function likePost(id) {
+  const posts = getPosts();
+
+  const post = posts.find(function(p) {
+    return p.id === id;
+  });
+
+  if (!post) return;
+
+  post.likes++;
+  if (savePosts(posts)) renderPosts();
+}
+
+function deletePost(id) {
+  if (!confirm("Delete this post?")) return;
+
+  const posts = getPosts().filter(function(p) {
+    return p.id !== id;
+  });
+
+  if (savePosts(posts)) renderPosts();
+}
+
 function backDashboard() {
   show("dashboard");
 }
@@ -270,6 +461,8 @@ window.onload = function() {
 </script>
 </body>
 </html>
+
+
 
 
   
