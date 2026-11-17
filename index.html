@@ -2,13 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZUNO App</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZUNO</title>
 
 <style>
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -18,51 +16,58 @@ body {
   font-family: Arial, sans-serif;
 }
 
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .logo {
   color: #39e6c0;
   font-size: 32px;
   font-weight: bold;
 }
 
-button {
-  cursor: pointer;
-  border: none;
-  border-radius: 12px;
-  padding: 15px;
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.welcome, .dashboard {
-  margin-top: 45px;
-  padding: 25px;
+.box {
   background: #1c2a3d;
-  border-radius: 20px;
+  padding: 22px;
+  border-radius: 18px;
+  margin-top: 25px;
 }
 
-h1 {
-  font-size: 30px;
-}
-
-p {
-  color: #bdc7d5;
-  line-height: 1.6;
-}
-
-.start {
-  width: 100%;
-  margin-top: 20px;
+button {
+  padding: 14px;
+  border: 0;
+  border-radius: 10px;
   background: #39e6c0;
   color: #101827;
+  font-weight: bold;
+  cursor: pointer;
 }
 
-.logout {
+input {
+  display: block;
+  width: 100%;
+  padding: 13px;
+  margin: 12px 0;
+  border-radius: 9px;
+  border: 1px solid #526078;
+  background: #25364b;
+  color: white;
+}
+
+.hidden { display: none; }
+
+.photo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #34445a;
+  margin: 15px auto;
+  display: block;
+}
+
+.full {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.secondary {
   background: #34445a;
   color: white;
 }
@@ -70,129 +75,203 @@ p {
 .features {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-top: 25px;
+  gap: 12px;
 }
 
 .card {
   background: #25364b;
-  padding: 20px 10px;
-  border-radius: 15px;
+  padding: 15px 8px;
+  border-radius: 14px;
   text-align: center;
 }
 
-.card span {
-  font-size: 32px;
-}
-
-.card h3 {
-  font-size: 16px;
-}
-
-.hidden {
-  display: none;
-}
-
-footer {
-  text-align: center;
-  color: #8997aa;
-  margin-top: 45px;
-}
+.card span { font-size: 30px; }
+.card p { color: #bdc7d5; font-size: 13px; }
 </style>
 </head>
 
 <body>
 
-<header>
-  <div class="logo">ZUNO.</div>
-</header>
+<div class="logo">ZUNO.</div>
 
-<!-- Welcome Screen -->
-<section class="welcome" id="welcome">
+<section id="login" class="box">
   <h1>Welcome to ZUNO!</h1>
-  <p>
-    One App. Every Generation.
-    Your World. Your People. Your Space.
-  </p>
-
-  <button class="start" onclick="guestLogin()">
+  <p>Your World. Your People. Your Space.</p>
+  <button class="full" onclick="login()">
     Continue as Guest
   </button>
 </section>
 
-<!-- Dashboard -->
-<section class="dashboard hidden" id="dashboard">
-
-  <h1>Hello, Guest! 👋</h1>
+<section id="dashboard" class="box hidden">
+  <h2>Hello, <span id="dashName">Guest</span>! 👋</h2>
   <p>Welcome to your ZUNO Dashboard.</p>
 
   <h2>Explore ZUNO</h2>
 
   <div class="features">
-
     <div class="card">
       <span>🎬</span>
       <h3>Entertainment</h3>
       <p>Watch and enjoy</p>
     </div>
-
     <div class="card">
       <span>📚</span>
       <h3>Knowledge</h3>
       <p>Learn new things</p>
     </div>
-
     <div class="card">
       <span>🌍</span>
       <h3>Community</h3>
       <p>Connect with people</p>
     </div>
-
     <div class="card">
       <span>🎮</span>
       <h3>Games & Help</h3>
       <p>Play and explore</p>
     </div>
-
   </div>
 
-  <button class="start logout" onclick="logout()">
-    Logout
+  <button class="full" onclick="openProfile()">
+    My Profile 👤
   </button>
 
+  <button class="full secondary" onclick="logout()">
+    Logout
+  </button>
 </section>
 
-<footer>
-  © 2026 ZUNO. All rights reserved.
-</footer>
+<section id="profile" class="box hidden">
+  <h2>My Profile 👤</h2>
+
+  <img id="preview"
+  class="photo"
+  src="https://placehold.co/100x100/25364b/39e6c0?text=User"
+  alt="Profile photo">
+
+  <label>Choose Profile Photo</label>
+  <input type="file" id="photoInput" accept="image/*">
+
+  <label>Your Name</label>
+  <input id="nameInput" type="text"
+  placeholder="Enter your name">
+
+  <label>About You</label>
+  <input id="aboutInput" type="text"
+  placeholder="Write something about yourself">
+
+  <button class="full" onclick="saveProfile()">
+    Save Profile
+  </button>
+
+  <button class="full secondary" onclick="backDashboard()">
+    Back to Dashboard
+  </button>
+</section>
 
 <script>
 
-function guestLogin() {
-  localStorage.setItem("zunoGuest", "true");
-  showDashboard();
+function show(id) {
+  ["login","dashboard","profile"].forEach(function(x) {
+    document.getElementById(x).classList.add("hidden");
+  });
+
+  document.getElementById(id).classList.remove("hidden");
 }
 
-function showDashboard() {
-  document.getElementById("welcome").classList.add("hidden");
-  document.getElementById("dashboard").classList.remove("hidden");
+function login() {
+  localStorage.setItem("zunoGuest","true");
+  show("dashboard");
+}
+
+function openProfile() {
+  document.getElementById("nameInput").value =
+    localStorage.getItem("zunoName") || "";
+
+  document.getElementById("aboutInput").value =
+    localStorage.getItem("zunoAbout") || "";
+
+  document.getElementById("preview").src =
+    localStorage.getItem("zunoPhoto") ||
+    "https://placehold.co/100x100/25364b/39e6c0?text=User";
+
+  document.getElementById("photoInput").value = "";
+
+  show("profile");
+}
+
+document.getElementById("photoInput").onchange = function() {
+  const file = this.files[0];
+
+  if (!file) return;
+
+  if (!file.type.startsWith("image/")) {
+    alert("Please select an image.");
+    return;
+  }
+
+  if (file.size > 500000) {
+    alert("Choose a photo under 500 KB.");
+    this.value = "";
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+    document.getElementById("preview").src = e.target.result;
+  };
+
+  reader.readAsDataURL(file);
+};
+
+function saveProfile() {
+  const name = document.getElementById("nameInput").value.trim();
+  const about = document.getElementById("aboutInput").value.trim();
+  const photo = document.getElementById("preview").src;
+
+  if (!name) {
+    alert("Please enter your name!");
+    return;
+  }
+
+  try {
+    localStorage.setItem("zunoName", name);
+    localStorage.setItem("zunoAbout", about);
+    localStorage.setItem("zunoPhoto", photo);
+  } catch(e) {
+    alert("Storage full. Choose a smaller photo.");
+    return;
+  }
+
+  document.getElementById("dashName").innerText = name;
+
+  alert("Profile saved successfully!");
+  show("dashboard");
+}
+
+function backDashboard() {
+  show("dashboard");
 }
 
 function logout() {
   localStorage.removeItem("zunoGuest");
-
-  document.getElementById("dashboard").classList.add("hidden");
-  document.getElementById("welcome").classList.remove("hidden");
+  show("login");
 }
 
 window.onload = function() {
   if (localStorage.getItem("zunoGuest") === "true") {
-    showDashboard();
+    document.getElementById("dashName").innerText =
+      localStorage.getItem("zunoName") || "Guest";
+
+    show("dashboard");
   }
 };
 
 </script>
-
 </body>
 </html>
+
+
+  
+  
 
