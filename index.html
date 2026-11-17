@@ -577,15 +577,103 @@ window.onload = function() {
 
   <button class="zuno-reset" onclick="zunoReset()">🔄 Restart Game</button>
 </div>
+<style>
+.zuno-game {
+  max-width: 400px;
+  margin: 25px auto;
+  padding: 20px;
+  background: #111827;
+  color: white;
+  border-radius: 20px;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+.zuno-game h2 { color: #38bdf8; }
+.zuno-modes {
+  display: flex;
+  gap: 8px;
+  margin: 15px 0;
+}
+.zuno-modes button {
+  flex: 1;
+  padding: 11px 5px;
+  border: 0;
+  border-radius: 10px;
+  background: #334155;
+  color: white;
+  font-weight: bold;
+}
+.zuno-modes button.active { background: #0284c7; }
+.zuno-status { font-size: 19px; margin: 18px; }
+.zuno-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+}
+.zuno-cell {
+  aspect-ratio: 1;
+  background: #263449;
+  border: 2px solid #475569;
+  border-radius: 13px;
+  color: white;
+  font-size: 42px;
+  font-weight: bold;
+}
+.zuno-cell:disabled { opacity: 1; }
+.zuno-reset {
+  margin-top: 20px;
+  padding: 12px 25px;
+  border: 0;
+  border-radius: 25px;
+  background: #38bdf8;
+  color: #082f49;
+  font-weight: bold;
+  font-size: 16px;
+}
+</style>
+
+<div class="zuno-game">
+  <h2>🎮 ZUNO TIC TAC TOE</h2>
+
+  <div class="zuno-modes">
+    <button id="zunoTwo" class="active" onclick="zunoMode('two')">
+      👥 2 Players
+    </button>
+    <button id="zunoAI" onclick="zunoMode('ai')">
+      🤖 Computer
+    </button>
+  </div>
+
+  <p class="zuno-status" id="zunoStatus">X ki turn hai!</p>
+
+  <div class="zuno-board" id="zunoBoard">
+    <button class="zuno-cell"></button>
+    <button class="zuno-cell"></button>
+    <button class="zuno-cell"></button>
+    <button class="zuno-cell"></button>
+    <button class="zuno-cell"></button>
+    <button class="zuno-cell"></button>
+    <button class="zuno-cell"></button>
+    <button class="zuno-cell"></button>
+    <button class="zuno-cell"></button>
+  </div>
+
+  <button class="zuno-reset" onclick="zunoReset()">
+    🔄 Restart Game
+  </button>
+</div>
 
 <script>
 (function () {
-  const board = document.querySelectorAll("#zunoBoard .zuno-cell");
+  const board = document.querySelectorAll(
+    "#zunoBoard .zuno-cell"
+  );
   const status = document.getElementById("zunoStatus");
 
+  let cells = Array(9).fill("");
   let current = "X";
   let gameOver = false;
-  let cells = Array(9).fill("");
+  let mode = "two";
 
   const wins = [
     [0,1,2], [3,4,5], [6,7,8],
@@ -593,49 +681,161 @@ window.onload = function() {
     [0,4,8], [2,4,6]
   ];
 
-  function play(index) {
-    if (cells[index] || gameOver) return;
+  function winner(b) {
+    for (const line of wins) {
+      if (b[line[0]] &&
+          b[line[0]] === b[line[1]] &&
+          b[line[1]] === b[line[2]]) {
+        return b[line[0]];
+      }
+    }
+    return null;
+  }
 
-    cells[index] = current;
-    board[index].textContent = current;
-    board[index].disabled = true;
+  function finish() {
+    const w = winner(cells);
 
-    const winner = wins.find(line =>
-      line.every(i => cells[i] === current)
-    );
+    if (w) {
+      status.textContent =
+        w === "X" && mode === "ai"
+          ? "🏆 You Win!"
+          : w === "O" && mode === "ai"
+          ? "🤖 Computer Wins!"
+          : "🏆 " + w + " Wins!";
 
-    if (winner) {
-      status.textContent = "🏆 " + current + " Wins!";
       gameOver = true;
-      return;
+      board.forEach(b => b.disabled = true);
+      return true;
     }
 
     if (cells.every(Boolean)) {
       status.textContent = "🤝 Match Draw!";
       gameOver = true;
-      return;
+      return true;
     }
 
-    current = current === "X" ? "O" : "X";
-    status.textContent = current + " ki turn hai!";
+    return false;
   }
+
+  function minimax(b, isMax) {
+    const w = winner(b);
+
+    if (w === "O") return 10;
+    if (w === "X") return -10;
+    if (b.every(Boolean)) return 0;
+
+    if (isMax) {
+      let best = -Infinity;
+
+      b.forEach((v, i) => {
+        if (!v) {
+          b[i] = "O";
+          best = Math.max(best, minimax(b, false));
+          b[i] = "";
+        }
+      });
+
+      return best;
+    } else {
+      let best = Infinity;
+
+      b.forEach((v, i) => {
+        if (!v) {
+          b[i] = "X";
+          best = Math.min(best, minimax(b, true));
+          b[i] = "";
+        }
+      });
+
+      return best;
+    }
+  }
+
+  function computerMove() {
+    if (gameOver) return;
+
+    let best = -Infinity;
+    let move = -1;
+
+    cells.forEach((v, i) => {
+      if (!v) {
+        cells[i] = "O";
+        const score = minimax(cells, false);
+        cells[i] = "";
+
+        if (score > best) {
+          best = score;
+          move = i;
+        }
+      }
+    });
+
+    if (move !== -1) {
+      cells[move] = "O";
+      board[move].textContent = "O";
+      board[move].disabled = true;
+    }
+
+    if (!finish()) {
+      current = "X";
+      status.textContent = "❌ Your turn!";
+    }
+  }
+
+  function play(i) {
+    if (cells[i] || gameOver || current !== "X") return;
+
+    cells[i] = "X";
+    board[i].textContent = "X";
+    board[i].disabled = true;
+
+    if (finish()) return;
+
+    if (mode === "ai") {
+      current = "O";
+      status.textContent = "🤖 Computer is thinking...";
+      setTimeout(computerMove, 350);
+    } else {
+      current = "O";
+      status.textContent = "O ki turn hai!";
+    }
+  }
+
+  board.forEach((cell, i) => {
+    cell.addEventListener("click", () => play(i));
+  });
 
   window.zunoReset = function () {
     cells = Array(9).fill("");
     current = "X";
     gameOver = false;
+
     board.forEach(cell => {
       cell.textContent = "";
       cell.disabled = false;
     });
-    status.textContent = "X ki turn hai!";
+
+    status.textContent =
+      mode === "ai" ? "❌ Your turn!" : "X ki turn hai!";
   };
 
-  board.forEach((cell, i) => {
-    cell.addEventListener("click", () => play(i));
-  });
+  window.zunoMode = function (newMode) {
+    mode = newMode;
+
+    document.getElementById("zunoTwo")
+      .classList.toggle("active", mode === "two");
+
+    document.getElementById("zunoAI")
+      .classList.toggle("active", mode === "ai");
+
+    window.zunoReset();
+  };
 })();
 </script>
+
+
+
+
 
 
 
