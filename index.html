@@ -232,14 +232,12 @@ textarea {
     Back to Dashboard
   </button>
 </section>
-
 <script>
 
 function show(id) {
   ["login","dashboard","profile","community"].forEach(function(x) {
     document.getElementById(x).classList.add("hidden");
   });
-
   document.getElementById(id).classList.remove("hidden");
 }
 
@@ -260,13 +258,11 @@ function openProfile() {
     "https://placehold.co/100x100/25364b/39e6c0?text=User";
 
   document.getElementById("photoInput").value = "";
-
   show("profile");
 }
 
 document.getElementById("photoInput").onchange = function() {
   const file = this.files[0];
-
   if (!file) return;
 
   if (!file.type.startsWith("image/")) {
@@ -281,11 +277,9 @@ document.getElementById("photoInput").onchange = function() {
   }
 
   const reader = new FileReader();
-
   reader.onload = function(e) {
     document.getElementById("preview").src = e.target.result;
   };
-
   reader.readAsDataURL(file);
 };
 
@@ -309,7 +303,6 @@ function saveProfile() {
   }
 
   document.getElementById("dashName").innerText = name;
-
   alert("Profile saved successfully!");
   show("dashboard");
 }
@@ -321,7 +314,15 @@ function openCommunity() {
 
 function getPosts() {
   try {
-    return JSON.parse(localStorage.getItem("zunoPosts")) || [];
+    const posts = JSON.parse(localStorage.getItem("zunoPosts")) || [];
+
+    posts.forEach(function(post) {
+      if (!Array.isArray(post.comments)) {
+        post.comments = [];
+      }
+    });
+
+    return posts;
   } catch(e) {
     return [];
   }
@@ -348,14 +349,13 @@ function createPost() {
 
   const posts = getPosts();
 
-  const newPost = {
+  posts.unshift({
     id: Date.now().toString(),
     author: localStorage.getItem("zunoName") || "Guest",
     text: message,
-    likes: 0
-  };
-
-  posts.unshift(newPost);
+    likes: 0,
+    comments: []
+  });
 
   if (savePosts(posts)) {
     input.value = "";
@@ -398,8 +398,6 @@ function renderPosts() {
       likePost(post.id);
     };
 
-    actions.appendChild(likeButton);
-
     const deleteButton = document.createElement("button");
     deleteButton.className = "delete-btn";
     deleteButton.textContent = "Delete";
@@ -407,11 +405,47 @@ function renderPosts() {
       deletePost(post.id);
     };
 
+    actions.appendChild(likeButton);
     actions.appendChild(deleteButton);
+
+    const commentHeading = document.createElement("h4");
+    commentHeading.textContent = "💬 Comments";
+
+    const commentsArea = document.createElement("div");
+
+    post.comments.forEach(function(comment) {
+      const commentBox = document.createElement("p");
+      commentBox.className = "post";
+      commentBox.style.padding = "10px";
+
+      const commentAuthor = document.createElement("b");
+      commentAuthor.textContent = comment.author + ": ";
+
+      const commentText = document.createElement("span");
+      commentText.textContent = comment.text;
+
+      commentBox.appendChild(commentAuthor);
+      commentBox.appendChild(commentText);
+      commentsArea.appendChild(commentBox);
+    });
+
+    const commentInput = document.createElement("textarea");
+    commentInput.id = "comment-" + post.id;
+    commentInput.placeholder = "Write a comment...";
+
+    const commentButton = document.createElement("button");
+    commentButton.textContent = "Send Comment 💬";
+    commentButton.onclick = function() {
+      addComment(post.id);
+    };
 
     card.appendChild(author);
     card.appendChild(content);
     card.appendChild(actions);
+    card.appendChild(commentHeading);
+    card.appendChild(commentsArea);
+    card.appendChild(commentInput);
+    card.appendChild(commentButton);
 
     list.appendChild(card);
   });
@@ -419,7 +453,6 @@ function renderPosts() {
 
 function likePost(id) {
   const posts = getPosts();
-
   const post = posts.find(function(p) {
     return p.id === id;
   });
@@ -428,6 +461,33 @@ function likePost(id) {
 
   post.likes++;
   if (savePosts(posts)) renderPosts();
+}
+
+function addComment(id) {
+  const input = document.getElementById("comment-" + id);
+  const message = input.value.trim();
+
+  if (!message) {
+    alert("Please write a comment!");
+    return;
+  }
+
+  const posts = getPosts();
+  const post = posts.find(function(p) {
+    return p.id === id;
+  });
+
+  if (!post) return;
+
+  post.comments.push({
+    author: localStorage.getItem("zunoName") || "Guest",
+    text: message
+  });
+
+  if (savePosts(posts)) {
+    renderPosts();
+    alert("Comment added successfully!");
+  }
 }
 
 function deletePost(id) {
@@ -459,6 +519,13 @@ window.onload = function() {
 };
 
 </script>
+
+
+
+
+
+
+
 </body>
 </html>
 
