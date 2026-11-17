@@ -6,7 +6,9 @@
 <title>ZUNO App</title>
 
 <style>
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
@@ -32,55 +34,51 @@ button {
   cursor: pointer;
   border: none;
   border-radius: 12px;
-  padding: 12px 18px;
+  padding: 15px;
+  font-size: 16px;
   font-weight: bold;
 }
 
-.language {
-  background: #26364b;
-  color: white;
-}
-
-.welcome {
-  margin-top: 40px;
+.welcome, .dashboard {
+  margin-top: 45px;
   padding: 25px;
   background: #1c2a3d;
   border-radius: 20px;
 }
 
-.welcome h1 {
-  font-size: 29px;
+h1 {
+  font-size: 30px;
 }
 
-.welcome p {
+p {
   color: #bdc7d5;
   line-height: 1.6;
 }
 
 .start {
   width: 100%;
+  margin-top: 20px;
   background: #39e6c0;
   color: #101827;
-  font-size: 17px;
-  margin-top: 15px;
 }
 
-h2 {
-  margin-top: 35px;
+.logout {
+  background: #34445a;
+  color: white;
 }
 
 .features {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
+  margin-top: 25px;
 }
 
 .card {
-  padding: 22px 12px;
-  border-radius: 16px;
   background: #25364b;
+  padding: 20px 10px;
+  border-radius: 15px;
   text-align: center;
-  cursor: pointer;
 }
 
 .card span {
@@ -91,15 +89,14 @@ h2 {
   font-size: 16px;
 }
 
-.card p {
-  font-size: 12px;
-  color: #bdc7d5;
+.hidden {
+  display: none;
 }
 
 footer {
   text-align: center;
   color: #8997aa;
-  margin: 40px 0 15px;
+  margin-top: 45px;
 }
 </style>
 </head>
@@ -108,50 +105,60 @@ footer {
 
 <header>
   <div class="logo">ZUNO.</div>
-  <button class="language" onclick="changeLanguage()">
-    हिन्दी / EN
-  </button>
 </header>
 
-<section class="welcome">
-  <h1 id="heading">Welcome to ZUNO!</h1>
-  <p id="description">
+<!-- Welcome Screen -->
+<section class="welcome" id="welcome">
+  <h1>Welcome to ZUNO!</h1>
+  <p>
     One App. Every Generation.
-    Discover entertainment, knowledge and fun.
+    Your World. Your People. Your Space.
   </p>
 
-  <button class="start" onclick="startApp()">
+  <button class="start" onclick="guestLogin()">
     Continue as Guest
   </button>
 </section>
 
-<h2 id="explore">Explore ZUNO</h2>
+<!-- Dashboard -->
+<section class="dashboard hidden" id="dashboard">
 
-<section class="features">
+  <h1>Hello, Guest! 👋</h1>
+  <p>Welcome to your ZUNO Dashboard.</p>
 
-  <div class="card" onclick="openFeature('Entertainment')">
-    <span>🎬</span>
-    <h3 id="f1">Entertainment</h3>
-    <p>Watch and enjoy</p>
+  <h2>Explore ZUNO</h2>
+
+  <div class="features">
+
+    <div class="card">
+      <span>🎬</span>
+      <h3>Entertainment</h3>
+      <p>Watch and enjoy</p>
+    </div>
+
+    <div class="card">
+      <span>📚</span>
+      <h3>Knowledge</h3>
+      <p>Learn new things</p>
+    </div>
+
+    <div class="card">
+      <span>🌍</span>
+      <h3>Community</h3>
+      <p>Connect with people</p>
+    </div>
+
+    <div class="card">
+      <span>🎮</span>
+      <h3>Games & Help</h3>
+      <p>Play and explore</p>
+    </div>
+
   </div>
 
-  <div class="card" onclick="openFeature('Knowledge')">
-    <span>📚</span>
-    <h3 id="f2">Knowledge</h3>
-    <p>Learn something new</p>
-  </div>
-
-  <div class="card" onclick="openFeature('Community')">
-    <span>🌍</span>
-    <h3 id="f3">Community</h3>
-    <p>Connect with people</p>
-  </div>
-
-  <div class="card" onclick="openFeature('Games & Help')">
-    <span>🎮</span>
-    <h3 id="f4">Games & Help</h3>
-    <p>Play and explore</p>
-  </div>
+  <button class="start logout" onclick="logout()">
+    Logout
+  </button>
 
 </section>
 
@@ -160,46 +167,32 @@ footer {
 </footer>
 
 <script>
-let hindi = false;
 
-function changeLanguage() {
-  hindi = !hindi;
-
-  document.getElementById("heading").innerText =
-    hindi ? "ZUNO में आपका स्वागत है!" : "Welcome to ZUNO!";
-
-  document.getElementById("description").innerText =
-    hindi ? "एक ऐप, हर पीढ़ी के लिए। मनोरंजन और ज्ञान की दुनिया।"
-    : "One App. Every Generation. Discover entertainment, knowledge and fun.";
-
-  document.getElementById("explore").innerText =
-    hindi ? "ZUNO की दुनिया" : "Explore ZUNO";
-
-  document.getElementById("f1").innerText =
-    hindi ? "मनोरंजन" : "Entertainment";
-
-  document.getElementById("f2").innerText =
-    hindi ? "ज्ञान" : "Knowledge";
-
-  document.getElementById("f3").innerText =
-    hindi ? "कम्युनिटी" : "Community";
-
-  document.getElementById("f4").innerText =
-    hindi ? "गेम्स और मदद" : "Games & Help";
+function guestLogin() {
+  localStorage.setItem("zunoGuest", "true");
+  showDashboard();
 }
 
-function startApp() {
-  alert("Welcome to ZUNO! Guest mode started.");
+function showDashboard() {
+  document.getElementById("welcome").classList.add("hidden");
+  document.getElementById("dashboard").classList.remove("hidden");
 }
 
-function openFeature(name) {
-  alert(name + " section coming soon!");
+function logout() {
+  localStorage.removeItem("zunoGuest");
+
+  document.getElementById("dashboard").classList.add("hidden");
+  document.getElementById("welcome").classList.remove("hidden");
 }
+
+window.onload = function() {
+  if (localStorage.getItem("zunoGuest") === "true") {
+    showDashboard();
+  }
+};
+
 </script>
 
 </body>
 </html>
 
-
-
-    
