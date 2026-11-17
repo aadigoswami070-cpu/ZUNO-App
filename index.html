@@ -519,6 +519,124 @@ window.onload = function() {
 };
 
 </script>
+<style>
+.zuno-game {
+  max-width: 400px;
+  margin: 25px auto;
+  padding: 20px;
+  background: #111827;
+  color: white;
+  border-radius: 20px;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+.zuno-game h2 { color: #38bdf8; }
+.zuno-status { font-size: 19px; margin: 18px; }
+.zuno-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+}
+.zuno-cell {
+  aspect-ratio: 1;
+  background: #263449;
+  border: 2px solid #475569;
+  border-radius: 13px;
+  color: white;
+  font-size: 42px;
+  font-weight: bold;
+}
+.zuno-cell:disabled { opacity: 1; }
+.zuno-reset {
+  margin-top: 20px;
+  padding: 12px 25px;
+  border: 0;
+  border-radius: 25px;
+  background: #38bdf8;
+  color: #082f49;
+  font-weight: bold;
+  font-size: 16px;
+}
+</style>
+
+<div class="zuno-game">
+  <h2>🎮 ZUNO TIC TAC TOE</h2>
+  <p class="zuno-status" id="zunoStatus">X ki turn hai!</p>
+
+  <div class="zuno-board" id="zunoBoard">
+    <button class="zuno-cell"></button>
+    <button class="zuno-cell"></button>
+    <button class="zuno-cell"></button>
+    <button class="zuno-cell"></button>
+    <button class="zuno-cell"></button>
+    <button class="zuno-cell"></button>
+    <button class="zuno-cell"></button>
+    <button class="zuno-cell"></button>
+    <button class="zuno-cell"></button>
+  </div>
+
+  <button class="zuno-reset" onclick="zunoReset()">🔄 Restart Game</button>
+</div>
+
+<script>
+(function () {
+  const board = document.querySelectorAll("#zunoBoard .zuno-cell");
+  const status = document.getElementById("zunoStatus");
+
+  let current = "X";
+  let gameOver = false;
+  let cells = Array(9).fill("");
+
+  const wins = [
+    [0,1,2], [3,4,5], [6,7,8],
+    [0,3,6], [1,4,7], [2,5,8],
+    [0,4,8], [2,4,6]
+  ];
+
+  function play(index) {
+    if (cells[index] || gameOver) return;
+
+    cells[index] = current;
+    board[index].textContent = current;
+    board[index].disabled = true;
+
+    const winner = wins.find(line =>
+      line.every(i => cells[i] === current)
+    );
+
+    if (winner) {
+      status.textContent = "🏆 " + current + " Wins!";
+      gameOver = true;
+      return;
+    }
+
+    if (cells.every(Boolean)) {
+      status.textContent = "🤝 Match Draw!";
+      gameOver = true;
+      return;
+    }
+
+    current = current === "X" ? "O" : "X";
+    status.textContent = current + " ki turn hai!";
+  }
+
+  window.zunoReset = function () {
+    cells = Array(9).fill("");
+    current = "X";
+    gameOver = false;
+    board.forEach(cell => {
+      cell.textContent = "";
+      cell.disabled = false;
+    });
+    status.textContent = "X ki turn hai!";
+  };
+
+  board.forEach((cell, i) => {
+    cell.addEventListener("click", () => play(i));
+  });
+})();
+</script>
+
 
 
 
