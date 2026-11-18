@@ -210,7 +210,61 @@ textarea {
   color: #082f49;
   font-size: 16px;
 }
+/* ROCK PAPER SCISSORS */
 
+.rps-game {
+  background: #111827;
+  padding: 20px;
+  border-radius: 18px;
+  margin-top: 25px;
+  text-align: center;
+}
+
+.rps-choices {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.rps-choices button {
+  flex: 1;
+  font-size: 28px;
+  padding: 16px 5px;
+}
+
+.rps-result {
+  background: #263449;
+  border-radius: 12px;
+  padding: 15px;
+  margin-top: 15px;
+}
+
+.rps-score {
+  display: flex;
+  justify-content: space-around;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.rps-score div {
+  background: #25364b;
+  padding: 12px 5px;
+  border-radius: 10px;
+  flex: 1;
+}
+
+.rps-score strong {
+  display: block;
+  color: #39e6c0;
+  font-size: 22px;
+}
+
+.rps-reset {
+  width: 100%;
+  margin-top: 15px;
+  background: #34445a;
+  color: white;
+}
 </style>
 </head>
 
@@ -407,7 +461,27 @@ textarea {
 
   <h2>📚 Knowledge</h2>
   <p>Knowledge section is coming soon to ZUNO!</p>
+<div class="rps-game">
+  <h2>✊ Rock Paper Scissors</h2>
+  <p>Choose your move!</p>
 
+  <div class="rps-choices">
+    <button onclick="playRPS('rock')">✊</button>
+    <button onclick="playRPS('paper')">✋</button>
+    <button onclick="playRPS('scissors')">✌️</button>
+  </div>
+
+  <div class="rps-result" id="rpsResult">
+    Result yahan dikhega
+  </div>
+
+  <div class="rps-score">
+    <div>You<strong id="userScore">0</strong></div>
+    <div>Computer<strong id="computerScore">0</strong></div>
+  </div>
+
+  <button class="rps-reset" onclick="resetRPS()">Reset Game</button>
+</div>
   <button class="full secondary" onclick="backDashboard()">
     Back to Dashboard
   </button>
@@ -1118,7 +1192,44 @@ window.onload = function() {
   };
 
 })();
+let userScore = 0;
+let computerScore = 0;
 
+function playRPS(userChoice) {
+  const choices = ["rock", "paper", "scissors"];
+  const computerChoice = choices[Math.floor(Math.random() * 3)];
+
+  let result = "";
+
+  if (userChoice === computerChoice) {
+    result = "It's a Draw! 🤝";
+  } else if (
+    (userChoice === "rock" && computerChoice === "scissors") ||
+    (userChoice === "paper" && computerChoice === "rock") ||
+    (userChoice === "scissors" && computerChoice === "paper")
+  ) {
+    result = "You Win! 🎉";
+    userScore++;
+  } else {
+    result = "Computer Wins! 🤖";
+    computerScore++;
+  }
+
+  document.getElementById("rpsResult").innerText =
+    "You: " + userChoice + " | Computer: " + computerChoice + " | " + result;
+
+  document.getElementById("userScore").innerText = userScore;
+  document.getElementById("computerScore").innerText = computerScore;
+}
+
+function resetRPS() {
+  userScore = 0;
+  computerScore = 0;
+
+  document.getElementById("userScore").innerText = 0;
+  document.getElementById("computerScore").innerText = 0;
+  document.getElementById("rpsResult").innerText = "Game Reset! 🎮";
+}
 </script>
 
 </body>
