@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+
+  <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -6,7 +7,9 @@
 <title>ZUNO</title>
 
 <style>
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
@@ -30,13 +33,17 @@ body {
 }
 
 button {
-  padding: 14px;
+  padding: 13px;
   border: 0;
   border-radius: 10px;
   background: #39e6c0;
   color: #101827;
   font-weight: bold;
   cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
 }
 
 input, textarea {
@@ -56,16 +63,8 @@ textarea {
   resize: vertical;
 }
 
-.hidden { display: none; }
-
-.photo {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  background: #34445a;
-  margin: 15px auto;
-  display: block;
+.hidden {
+  display: none !important;
 }
 
 .full {
@@ -89,10 +88,27 @@ textarea {
   padding: 15px 8px;
   border-radius: 14px;
   text-align: center;
+  cursor: pointer;
 }
 
-.card span { font-size: 30px; }
-.card p { color: #bdc7d5; font-size: 13px; }
+.card span {
+  font-size: 30px;
+}
+
+.card p {
+  color: #bdc7d5;
+  font-size: 13px;
+}
+
+.photo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #34445a;
+  margin: 15px auto;
+  display: block;
+}
 
 .post {
   background: #25364b;
@@ -115,6 +131,7 @@ textarea {
 .post-actions {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
   margin-top: 12px;
 }
 
@@ -126,6 +143,74 @@ textarea {
   background: #743d4a;
   color: white;
 }
+
+/* GAMES */
+
+.zuno-game {
+  max-width: 400px;
+  margin: 25px auto;
+  padding: 20px;
+  background: #111827;
+  color: white;
+  border-radius: 20px;
+  text-align: center;
+}
+
+.zuno-game h2 {
+  color: #38bdf8;
+}
+
+.zuno-modes {
+  display: flex;
+  gap: 8px;
+  margin: 15px 0;
+}
+
+.zuno-modes button {
+  flex: 1;
+  padding: 11px 5px;
+  background: #334155;
+  color: white;
+}
+
+.zuno-modes button.active {
+  background: #0284c7;
+}
+
+.zuno-status {
+  font-size: 19px;
+  margin: 18px;
+}
+
+.zuno-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+}
+
+.zuno-cell {
+  aspect-ratio: 1;
+  background: #263449;
+  border: 2px solid #475569;
+  border-radius: 13px;
+  color: white;
+  font-size: 42px;
+  font-weight: bold;
+}
+
+.zuno-cell:disabled {
+  opacity: 1;
+}
+
+.zuno-reset {
+  margin-top: 20px;
+  padding: 12px 25px;
+  border-radius: 25px;
+  background: #38bdf8;
+  color: #082f49;
+  font-size: 16px;
+}
+
 </style>
 </head>
 
@@ -133,28 +218,35 @@ textarea {
 
 <div class="logo">ZUNO.</div>
 
+<!-- LOGIN -->
+
 <section id="login" class="box">
   <h1>Welcome to ZUNO!</h1>
   <p>Your World. Your People. Your Space.</p>
+
   <button class="full" onclick="login()">
     Continue as Guest
   </button>
 </section>
 
+<!-- DASHBOARD -->
+
 <section id="dashboard" class="box hidden">
+
   <h2>Hello, <span id="dashName">Guest</span>! 👋</h2>
   <p>Welcome to your ZUNO Dashboard.</p>
 
   <h2>Explore ZUNO</h2>
 
   <div class="features">
-    <div class="card">
+
+    <div class="card" onclick="show('entertainment')">
       <span>🎬</span>
       <h3>Entertainment</h3>
       <p>Watch and enjoy</p>
     </div>
 
-    <div class="card">
+    <div class="card" onclick="show('knowledge')">
       <span>📚</span>
       <h3>Knowledge</h3>
       <p>Learn new things</p>
@@ -166,11 +258,12 @@ textarea {
       <p>Connect with people</p>
     </div>
 
-    <div class="card">
+    <div class="card" onclick="openGames()">
       <span>🎮</span>
       <h3>Games & Help</h3>
       <p>Play and explore</p>
     </div>
+
   </div>
 
   <button class="full" onclick="openCommunity()">
@@ -184,26 +277,28 @@ textarea {
   <button class="full secondary" onclick="logout()">
     Logout
   </button>
+
 </section>
 
+<!-- PROFILE -->
+
 <section id="profile" class="box hidden">
+
   <h2>My Profile 👤</h2>
 
   <img id="preview"
-  class="photo"
-  src="https://placehold.co/100x100/25364b/39e6c0?text=User"
-  alt="Profile photo">
+    class="photo"
+    src="https://placehold.co/100x100/25364b/39e6c0?text=User"
+    alt="Profile photo">
 
   <label>Choose Profile Photo</label>
   <input type="file" id="photoInput" accept="image/*">
 
   <label>Your Name</label>
-  <input id="nameInput" type="text"
-  placeholder="Enter your name">
+  <input id="nameInput" type="text" placeholder="Enter your name">
 
   <label>About You</label>
-  <input id="aboutInput" type="text"
-  placeholder="Write something about yourself">
+  <input id="aboutInput" type="text" placeholder="Write something about yourself">
 
   <button class="full" onclick="saveProfile()">
     Save Profile
@@ -212,41 +307,151 @@ textarea {
   <button class="full secondary" onclick="backDashboard()">
     Back to Dashboard
   </button>
+
 </section>
 
+<!-- COMMUNITY -->
+
 <section id="community" class="box hidden">
+
   <h2>🌍 ZUNO Community</h2>
   <p>Share your thoughts with the world!</p>
 
-  <textarea id="postInput"
-  placeholder="What's on your mind?"></textarea>
+  <textarea id="postInput" placeholder="What's on your mind?"></textarea>
 
   <button class="full" onclick="createPost()">
     Publish Post 🚀
   </button>
 
   <h3>Community Posts</h3>
+
   <div id="postsList"></div>
 
   <button class="full secondary" onclick="backDashboard()">
     Back to Dashboard
   </button>
+
 </section>
+
+<!-- GAMES -->
+
+<section id="games" class="box hidden">
+
+  <h2>🎮 ZUNO Games</h2>
+  <p>Choose a game and have fun!</p>
+
+  <div class="zuno-game">
+
+    <h2>🎮 TIC TAC TOE</h2>
+
+    <div class="zuno-modes">
+
+      <button id="zunoTwo" class="active" onclick="zunoMode('two')">
+        👥 2 Players
+      </button>
+
+      <button id="zunoAI" onclick="zunoMode('ai')">
+        🤖 Computer
+      </button>
+
+    </div>
+
+    <p class="zuno-status" id="zunoStatus">
+      X ki turn hai!
+    </p>
+
+    <div class="zuno-board" id="zunoBoard">
+
+      <button class="zuno-cell"></button>
+      <button class="zuno-cell"></button>
+      <button class="zuno-cell"></button>
+
+      <button class="zuno-cell"></button>
+      <button class="zuno-cell"></button>
+      <button class="zuno-cell"></button>
+
+      <button class="zuno-cell"></button>
+      <button class="zuno-cell"></button>
+      <button class="zuno-cell"></button>
+
+    </div>
+
+    <button class="zuno-reset" onclick="zunoReset()">
+      🔄 Restart Game
+    </button>
+
+  </div>
+
+  <button class="full secondary" onclick="backDashboard()">
+    Back to Dashboard
+  </button>
+
+</section>
+
+<!-- ENTERTAINMENT -->
+
+<section id="entertainment" class="box hidden">
+
+  <h2>🎬 Entertainment</h2>
+  <p>Entertainment section is coming soon to ZUNO!</p>
+
+  <button class="full secondary" onclick="backDashboard()">
+    Back to Dashboard
+  </button>
+
+</section>
+
+<!-- KNOWLEDGE -->
+
+<section id="knowledge" class="box hidden">
+
+  <h2>📚 Knowledge</h2>
+  <p>Knowledge section is coming soon to ZUNO!</p>
+
+  <button class="full secondary" onclick="backDashboard()">
+    Back to Dashboard
+  </button>
+
+</section>
+
 <script>
 
+/* PAGE NAVIGATION */
+
 function show(id) {
-  ["login","dashboard","profile","community"].forEach(function(x) {
-    document.getElementById(x).classList.add("hidden");
+
+  const sections = [
+    "login",
+    "dashboard",
+    "profile",
+    "community",
+    "games",
+    "entertainment",
+    "knowledge"
+  ];
+
+  sections.forEach(function(section) {
+    document.getElementById(section).classList.add("hidden");
   });
+
   document.getElementById(id).classList.remove("hidden");
 }
 
+/* LOGIN */
+
 function login() {
-  localStorage.setItem("zunoGuest","true");
+  localStorage.setItem("zunoGuest", "true");
+
+  document.getElementById("dashName").innerText =
+    localStorage.getItem("zunoName") || "Guest";
+
   show("dashboard");
 }
 
+/* PROFILE */
+
 function openProfile() {
+
   document.getElementById("nameInput").value =
     localStorage.getItem("zunoName") || "";
 
@@ -258,15 +463,21 @@ function openProfile() {
     "https://placehold.co/100x100/25364b/39e6c0?text=User";
 
   document.getElementById("photoInput").value = "";
+
   show("profile");
 }
 
+/* PHOTO PREVIEW */
+
 document.getElementById("photoInput").onchange = function() {
+
   const file = this.files[0];
+
   if (!file) return;
 
   if (!file.type.startsWith("image/")) {
     alert("Please select an image.");
+    this.value = "";
     return;
   }
 
@@ -277,13 +488,18 @@ document.getElementById("photoInput").onchange = function() {
   }
 
   const reader = new FileReader();
+
   reader.onload = function(e) {
     document.getElementById("preview").src = e.target.result;
   };
+
   reader.readAsDataURL(file);
 };
 
+/* SAVE PROFILE */
+
 function saveProfile() {
+
   const name = document.getElementById("nameInput").value.trim();
   const about = document.getElementById("aboutInput").value.trim();
   const photo = document.getElementById("preview").src;
@@ -294,18 +510,26 @@ function saveProfile() {
   }
 
   try {
+
     localStorage.setItem("zunoName", name);
     localStorage.setItem("zunoAbout", about);
     localStorage.setItem("zunoPhoto", photo);
+
   } catch(e) {
+
     alert("Storage full. Choose a smaller photo.");
     return;
+
   }
 
   document.getElementById("dashName").innerText = name;
+
   alert("Profile saved successfully!");
+
   show("dashboard");
 }
+
+/* COMMUNITY */
 
 function openCommunity() {
   renderPosts();
@@ -313,32 +537,49 @@ function openCommunity() {
 }
 
 function getPosts() {
+
   try {
+
     const posts = JSON.parse(localStorage.getItem("zunoPosts")) || [];
 
     posts.forEach(function(post) {
       if (!Array.isArray(post.comments)) {
         post.comments = [];
       }
+
+      if (typeof post.likes !== "number") {
+        post.likes = 0;
+      }
     });
 
     return posts;
+
   } catch(e) {
+
     return [];
+
   }
 }
 
 function savePosts(posts) {
+
   try {
+
     localStorage.setItem("zunoPosts", JSON.stringify(posts));
     return true;
+
   } catch(e) {
+
     alert("Storage full. Please try again.");
     return false;
+
   }
 }
 
+/* CREATE POST */
+
 function createPost() {
+
   const input = document.getElementById("postInput");
   const message = input.value.trim();
 
@@ -350,34 +591,48 @@ function createPost() {
   const posts = getPosts();
 
   posts.unshift({
+
     id: Date.now().toString(),
     author: localStorage.getItem("zunoName") || "Guest",
     text: message,
     likes: 0,
     comments: []
+
   });
 
   if (savePosts(posts)) {
+
     input.value = "";
     renderPosts();
+
     alert("Your post is published!");
+
   }
 }
 
+/* DISPLAY POSTS */
+
 function renderPosts() {
+
   const list = document.getElementById("postsList");
   const posts = getPosts();
 
   list.replaceChildren();
 
   if (posts.length === 0) {
+
     const empty = document.createElement("p");
-    empty.textContent = "No posts yet. Be the first to share!";
+
+    empty.textContent =
+      "No posts yet. Be the first to share!";
+
     list.appendChild(empty);
+
     return;
   }
 
   posts.forEach(function(post) {
+
     const card = document.createElement("div");
     card.className = "post";
 
@@ -392,15 +647,23 @@ function renderPosts() {
     const actions = document.createElement("div");
     actions.className = "post-actions";
 
+    /* LIKE BUTTON */
+
     const likeButton = document.createElement("button");
+
     likeButton.textContent = "❤️ Like (" + post.likes + ")";
+
     likeButton.onclick = function() {
       likePost(post.id);
     };
 
+    /* DELETE BUTTON */
+
     const deleteButton = document.createElement("button");
+
     deleteButton.className = "delete-btn";
     deleteButton.textContent = "Delete";
+
     deleteButton.onclick = function() {
       deletePost(post.id);
     };
@@ -408,12 +671,15 @@ function renderPosts() {
     actions.appendChild(likeButton);
     actions.appendChild(deleteButton);
 
+    /* COMMENTS */
+
     const commentHeading = document.createElement("h4");
     commentHeading.textContent = "💬 Comments";
 
     const commentsArea = document.createElement("div");
 
     post.comments.forEach(function(comment) {
+
       const commentBox = document.createElement("p");
       commentBox.className = "post";
       commentBox.style.padding = "10px";
@@ -426,18 +692,27 @@ function renderPosts() {
 
       commentBox.appendChild(commentAuthor);
       commentBox.appendChild(commentText);
+
       commentsArea.appendChild(commentBox);
+
     });
 
+    /* COMMENT INPUT */
+
     const commentInput = document.createElement("textarea");
+
     commentInput.id = "comment-" + post.id;
     commentInput.placeholder = "Write a comment...";
 
     const commentButton = document.createElement("button");
+
     commentButton.textContent = "Send Comment 💬";
+
     commentButton.onclick = function() {
       addComment(post.id);
     };
+
+    /* ADD EVERYTHING */
 
     card.appendChild(author);
     card.appendChild(content);
@@ -448,11 +723,16 @@ function renderPosts() {
     card.appendChild(commentButton);
 
     list.appendChild(card);
+
   });
 }
 
+/* LIKE */
+
 function likePost(id) {
+
   const posts = getPosts();
+
   const post = posts.find(function(p) {
     return p.id === id;
   });
@@ -460,10 +740,16 @@ function likePost(id) {
   if (!post) return;
 
   post.likes++;
-  if (savePosts(posts)) renderPosts();
+
+  if (savePosts(posts)) {
+    renderPosts();
+  }
 }
 
+/* COMMENT */
+
 function addComment(id) {
+
   const input = document.getElementById("comment-" + id);
   const message = input.value.trim();
 
@@ -473,6 +759,7 @@ function addComment(id) {
   }
 
   const posts = getPosts();
+
   const post = posts.find(function(p) {
     return p.id === id;
   });
@@ -480,194 +767,79 @@ function addComment(id) {
   if (!post) return;
 
   post.comments.push({
+
     author: localStorage.getItem("zunoName") || "Guest",
     text: message
+
   });
 
   if (savePosts(posts)) {
+
     renderPosts();
+
     alert("Comment added successfully!");
+
   }
 }
 
+/* DELETE POST */
+
 function deletePost(id) {
+
   if (!confirm("Delete this post?")) return;
 
   const posts = getPosts().filter(function(p) {
     return p.id !== id;
   });
 
-  if (savePosts(posts)) renderPosts();
+  if (savePosts(posts)) {
+    renderPosts();
+  }
 }
+
+/* GAMES */
+
+function openGames() {
+  zunoReset();
+  show("games");
+}
+
+/* DASHBOARD */
 
 function backDashboard() {
   show("dashboard");
 }
+
+/* LOGOUT */
 
 function logout() {
   localStorage.removeItem("zunoGuest");
   show("login");
 }
 
+/* AUTO LOGIN */
+
 window.onload = function() {
+
   if (localStorage.getItem("zunoGuest") === "true") {
+
     document.getElementById("dashName").innerText =
       localStorage.getItem("zunoName") || "Guest";
 
     show("dashboard");
+
   }
+
 };
 
-</script>
-<style>
-.zuno-game {
-  max-width: 400px;
-  margin: 25px auto;
-  padding: 20px;
-  background: #111827;
-  color: white;
-  border-radius: 20px;
-  text-align: center;
-  font-family: Arial, sans-serif;
-}
-.zuno-game h2 { color: #38bdf8; }
-.zuno-status { font-size: 19px; margin: 18px; }
-.zuno-board {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 9px;
-}
-.zuno-cell {
-  aspect-ratio: 1;
-  background: #263449;
-  border: 2px solid #475569;
-  border-radius: 13px;
-  color: white;
-  font-size: 42px;
-  font-weight: bold;
-}
-.zuno-cell:disabled { opacity: 1; }
-.zuno-reset {
-  margin-top: 20px;
-  padding: 12px 25px;
-  border: 0;
-  border-radius: 25px;
-  background: #38bdf8;
-  color: #082f49;
-  font-weight: bold;
-  font-size: 16px;
-}
-</style>
+/* TIC TAC TOE */
 
-<div class="zuno-game">
-  <h2>🎮 ZUNO TIC TAC TOE</h2>
-  <p class="zuno-status" id="zunoStatus">X ki turn hai!</p>
+(function() {
 
-  <div class="zuno-board" id="zunoBoard">
-    <button class="zuno-cell"></button>
-    <button class="zuno-cell"></button>
-    <button class="zuno-cell"></button>
-    <button class="zuno-cell"></button>
-    <button class="zuno-cell"></button>
-    <button class="zuno-cell"></button>
-    <button class="zuno-cell"></button>
-    <button class="zuno-cell"></button>
-    <button class="zuno-cell"></button>
-  </div>
-
-  <button class="zuno-reset" onclick="zunoReset()">🔄 Restart Game</button>
-</div>
-<style>
-.zuno-game {
-  max-width: 400px;
-  margin: 25px auto;
-  padding: 20px;
-  background: #111827;
-  color: white;
-  border-radius: 20px;
-  text-align: center;
-  font-family: Arial, sans-serif;
-}
-.zuno-game h2 { color: #38bdf8; }
-.zuno-modes {
-  display: flex;
-  gap: 8px;
-  margin: 15px 0;
-}
-.zuno-modes button {
-  flex: 1;
-  padding: 11px 5px;
-  border: 0;
-  border-radius: 10px;
-  background: #334155;
-  color: white;
-  font-weight: bold;
-}
-.zuno-modes button.active { background: #0284c7; }
-.zuno-status { font-size: 19px; margin: 18px; }
-.zuno-board {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 9px;
-}
-.zuno-cell {
-  aspect-ratio: 1;
-  background: #263449;
-  border: 2px solid #475569;
-  border-radius: 13px;
-  color: white;
-  font-size: 42px;
-  font-weight: bold;
-}
-.zuno-cell:disabled { opacity: 1; }
-.zuno-reset {
-  margin-top: 20px;
-  padding: 12px 25px;
-  border: 0;
-  border-radius: 25px;
-  background: #38bdf8;
-  color: #082f49;
-  font-weight: bold;
-  font-size: 16px;
-}
-</style>
-
-<div class="zuno-game">
-  <h2>🎮 ZUNO TIC TAC TOE</h2>
-
-  <div class="zuno-modes">
-    <button id="zunoTwo" class="active" onclick="zunoMode('two')">
-      👥 2 Players
-    </button>
-    <button id="zunoAI" onclick="zunoMode('ai')">
-      🤖 Computer
-    </button>
-  </div>
-
-  <p class="zuno-status" id="zunoStatus">X ki turn hai!</p>
-
-  <div class="zuno-board" id="zunoBoard">
-    <button class="zuno-cell"></button>
-    <button class="zuno-cell"></button>
-    <button class="zuno-cell"></button>
-    <button class="zuno-cell"></button>
-    <button class="zuno-cell"></button>
-    <button class="zuno-cell"></button>
-    <button class="zuno-cell"></button>
-    <button class="zuno-cell"></button>
-    <button class="zuno-cell"></button>
-  </div>
-
-  <button class="zuno-reset" onclick="zunoReset()">
-    🔄 Restart Game
-  </button>
-</div>
-
-<script>
-(function () {
   const board = document.querySelectorAll(
     "#zunoBoard .zuno-cell"
   );
+
   const status = document.getElementById("zunoStatus");
 
   let cells = Array(9).fill("");
@@ -676,48 +848,92 @@ window.onload = function() {
   let mode = "two";
 
   const wins = [
-    [0,1,2], [3,4,5], [6,7,8],
-    [0,3,6], [1,4,7], [2,5,8],
-    [0,4,8], [2,4,6]
+
+    [0,1,2],
+    [3,4,5],
+    [6,7,8],
+
+    [0,3,6],
+    [1,4,7],
+    [2,5,8],
+
+    [0,4,8],
+    [2,4,6]
+
   ];
 
+  /* WINNER CHECK */
+
   function winner(b) {
+
     for (const line of wins) {
-      if (b[line[0]] &&
-          b[line[0]] === b[line[1]] &&
-          b[line[1]] === b[line[2]]) {
+
+      if (
+        b[line[0]] &&
+        b[line[0]] === b[line[1]] &&
+        b[line[1]] === b[line[2]]
+      ) {
+
         return b[line[0]];
+
       }
+
     }
+
     return null;
   }
 
+  /* GAME FINISH */
+
   function finish() {
+
     const w = winner(cells);
 
     if (w) {
-      status.textContent =
-        w === "X" && mode === "ai"
+
+      if (mode === "ai") {
+
+        status.textContent =
+          w === "X"
           ? "🏆 You Win!"
-          : w === "O" && mode === "ai"
-          ? "🤖 Computer Wins!"
-          : "🏆 " + w + " Wins!";
+          : "🤖 Computer Wins!";
+
+      } else {
+
+        status.textContent = "🏆 " + w + " Wins!";
+
+      }
 
       gameOver = true;
-      board.forEach(b => b.disabled = true);
+
+      board.forEach(function(b) {
+        b.disabled = true;
+      });
+
       return true;
+
     }
 
     if (cells.every(Boolean)) {
+
       status.textContent = "🤝 Match Draw!";
       gameOver = true;
+
+      board.forEach(function(b) {
+        b.disabled = true;
+      });
+
       return true;
+
     }
 
     return false;
   }
 
+  /* COMPUTER AI */
+
   function minimax(b, isMax) {
+
     const w = winner(b);
 
     if (w === "O") return 10;
@@ -725,65 +941,111 @@ window.onload = function() {
     if (b.every(Boolean)) return 0;
 
     if (isMax) {
+
       let best = -Infinity;
 
-      b.forEach((v, i) => {
+      b.forEach(function(v, i) {
+
         if (!v) {
+
           b[i] = "O";
-          best = Math.max(best, minimax(b, false));
+
+          best = Math.max(
+            best,
+            minimax(b, false)
+          );
+
           b[i] = "";
+
         }
+
       });
 
       return best;
+
     } else {
+
       let best = Infinity;
 
-      b.forEach((v, i) => {
+      b.forEach(function(v, i) {
+
         if (!v) {
+
           b[i] = "X";
-          best = Math.min(best, minimax(b, true));
+
+          best = Math.min(
+            best,
+            minimax(b, true)
+          );
+
           b[i] = "";
+
         }
+
       });
 
       return best;
+
     }
+
   }
 
+  /* COMPUTER MOVE */
+
   function computerMove() {
+
     if (gameOver) return;
 
     let best = -Infinity;
     let move = -1;
 
-    cells.forEach((v, i) => {
+    cells.forEach(function(v, i) {
+
       if (!v) {
+
         cells[i] = "O";
+
         const score = minimax(cells, false);
+
         cells[i] = "";
 
         if (score > best) {
+
           best = score;
           move = i;
+
         }
+
       }
+
     });
 
     if (move !== -1) {
+
       cells[move] = "O";
       board[move].textContent = "O";
       board[move].disabled = true;
+
     }
 
     if (!finish()) {
+
       current = "X";
       status.textContent = "❌ Your turn!";
+
     }
+
   }
 
+  /* PLAYER MOVE */
+
   function play(i) {
-    if (cells[i] || gameOver || current !== "X") return;
+
+    if (
+      cells[i] ||
+      gameOver ||
+      current !== "X"
+    ) return;
 
     cells[i] = "X";
     board[i].textContent = "X";
@@ -792,34 +1054,57 @@ window.onload = function() {
     if (finish()) return;
 
     if (mode === "ai") {
+
       current = "O";
       status.textContent = "🤖 Computer is thinking...";
+
       setTimeout(computerMove, 350);
+
     } else {
+
       current = "O";
       status.textContent = "O ki turn hai!";
+
     }
+
   }
 
-  board.forEach((cell, i) => {
-    cell.addEventListener("click", () => play(i));
+  /* BOARD BUTTONS */
+
+  board.forEach(function(cell, i) {
+
+    cell.addEventListener("click", function() {
+      play(i);
+    });
+
   });
 
-  window.zunoReset = function () {
+  /* RESTART */
+
+  window.zunoReset = function() {
+
     cells = Array(9).fill("");
     current = "X";
     gameOver = false;
 
-    board.forEach(cell => {
+    board.forEach(function(cell) {
+
       cell.textContent = "";
       cell.disabled = false;
+
     });
 
     status.textContent =
-      mode === "ai" ? "❌ Your turn!" : "X ki turn hai!";
+      mode === "ai"
+      ? "❌ Your turn!"
+      : "X ki turn hai!";
+
   };
 
-  window.zunoMode = function (newMode) {
+  /* GAME MODE */
+
+  window.zunoMode = function(newMode) {
+
     mode = newMode;
 
     document.getElementById("zunoTwo")
@@ -829,84 +1114,14 @@ window.onload = function() {
       .classList.toggle("active", mode === "ai");
 
     window.zunoReset();
+
   };
+
 })();
-</script>
-<style>
-.zuno-game {
-  max-width: 400px;
-  margin: 25px auto;
-  padding: 20px;
-  background: #111827;
-  color: white;
-  border-radius: 20px;
-  text-align: center;
-  font-family: Arial, sans-serif;
-}
-.zuno-game h2 { color: #38bdf8; }
-.zuno-modes {
-  display: flex;
-  gap: 8px;
-  margin: 15px 0;
-}
-.zuno-modes button {
-  flex: 1;
-  padding: 11px 5px;
-  border: 0;
-  border-radius: 10px;
-  background: #334155;
-  color: white;
-  font-weight: bold;
-}
-.zuno-modes button.active { background: #0284c7; }
-.zuno-status { font-size: 19px; margin: 18px; }
-.zuno-board {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 9px;
-}
-.zuno-cell {
-  aspect-ratio: 1;
-  background: #263449;
-  border: 2px solid #475569;
-  border-radius: 13px;
-  color: white;
-  font-size: 42px;
-  font-weight: bold;
-}
-.zuno-cell:disabled { opacity: 1; }
-.zuno-reset {
-  margin-top: 20px;
-  padding: 12px 25px;
-  border: 0;
-  border-radius: 25px;
-  background: #38bdf8;
-  color: #082f49;
-  font-weight: bold;
-  font-size: 16px;
-}
-</style>
 
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
 
 </body>
 </html>
 
-
-
-
-  
-  
 
